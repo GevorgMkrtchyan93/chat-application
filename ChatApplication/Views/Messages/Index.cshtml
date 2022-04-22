@@ -1,0 +1,83 @@
+﻿@model IEnumerable<ChatApplication.Models.Message>
+@{
+    ViewData["Title"] = "Home Page";
+    var userName = User.Identity.Name;
+}
+
+<div>
+    <p id="onlineUsersCounter"></p>
+</div>
+
+<div class="jumbotron bg-light">
+    <h2 class="text-center text-primary">
+        <i class="alert-dismissible"></i>&nbsp; Public Talk
+    </h2>
+    <div class="row">
+        <div class=" col-md-12" id="chat">
+            @if (Model != null)
+            {
+                @foreach (var message in Model.OrderBy(m => m.When))
+                {
+
+                    string containerClass, timePosition, textAligin, offset;
+                    if (userName == message.UserName)
+                    {
+                        containerClass = "connection darker";
+                        timePosition = "time-right text-right";
+                        textAligin = "text-right";
+                        offset = "col-md-6 offset-md-6";
+                    }
+                    else
+                    {
+                        containerClass = "container";
+                        timePosition = "time-left";
+                        textAligin = "text-left";
+                        offset = "";
+                    }
+
+                    <div class="row">
+                        <div class="@offset">
+                            <div class="@containerClass">
+                                <p class="sender @textAligin">@message.UserName</p>
+                                <p class="@textAligin">@message.Text</p>
+                                <p class="@timePosition">@message.When.ToString()</p>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            }
+        </div>
+        <div class="col-md-12">
+            <form asp-action="Create"
+                  data-ajax-begin="clearInputField" data-ajax-complete=""
+                  data-ajax-failure="alert('Fail')" data-ajax-success="sendMessage"
+                  data-ajax="true" data-ajax-method="POST">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="from-group">
+                    <input name="Text" placeholder="Message" class="form-control" id="messageText" />
+                </div>
+                <div class="form-group-right">
+                    <input type="submit" value="Send" id="submitButton" class="btn alert-dark" />
+                </div>
+
+                <input type="hidden" value="@userName" name="username" />
+
+            </form>
+        </div>
+    </div>
+</div>
+@if (User.Identity.IsAuthenticated)
+{
+    <script>
+        const userName = "@ViewBag.CurrentUserName";
+    </script>
+}
+
+@section scripts{
+
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/lib/jquery/dist/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/js/chat.js"></script>
+    <script src="~/js/signalrReqHendler.js"></script>
+}

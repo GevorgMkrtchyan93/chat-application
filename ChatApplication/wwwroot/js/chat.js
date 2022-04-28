@@ -57,13 +57,10 @@ function addMessageToChat(message) {
     const messageHTML = `<div class="row">
         <div class="${offset}">
                 <p class="sender ${textAligne}">${message.userName}</p>
-                <p class="sender ${textAligne}">${message.userName}</p>
                 <p class="${textAligne}">${message.text}</p>
                 <p class="${timePosition}">${message.when}</p>
-            </div>
         </div>
     </div>`
-
 
     //let sender = document.createElement('p');
     //sender.className = "sender";

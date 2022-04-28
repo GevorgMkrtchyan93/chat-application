@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChatApplication.Models
 {
@@ -17,7 +14,7 @@ namespace ChatApplication.Models
 
         public Message()
         {
-            When = DateTime.Now;
+            When = DateTime.UtcNow;
         }
     }
 }

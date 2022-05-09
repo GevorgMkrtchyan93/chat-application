@@ -57,14 +57,13 @@ function addMessageToChat(message) {
     const messageHTML = `<div class="row">
         <div class="${offset}">
                 <p class="sender ${textAligne}">${message.userName}</p>
-                <p class="sender ${textAligne}">${message.userName}</p>
                 <p class="${textAligne}">${message.text}</p>
                 <p class="${timePosition}">${message.when}</p>
-            </div>
         </div>
     </div>`
 
-
+<<<<<<< HEAD
+=======
     //let sender = document.createElement('p');
     //sender.className = "sender";
     //sender.innerHTML = message.userName;
@@ -83,6 +82,7 @@ function addMessageToChat(message) {
     //container.appendChild(sender);
     //container.appendChild(text);
     //container.appendChild(when);
+>>>>>>> 6bc8348db9b4805d2e387f7e5b56dde68ac1cd7a
     chat.appendChild(htmlToElement(messageHTML));
 }
 

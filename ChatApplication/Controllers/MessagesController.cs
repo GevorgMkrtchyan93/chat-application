@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace ChatApplication.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class MessagesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -29,7 +29,9 @@ namespace ChatApplication.Controllers
         string cacheKey = "Allmessages0";
 
         public MessagesController(ApplicationDbContext context, UserManager<AppUser> userManager, ICacheExtensionsService cacheExtensionsService)
+
         {
+            _distributedCache = distributedCache;
             _context = context;
             _userManager = userManager;
             _cacheExtensionsService = cacheExtensionsService;

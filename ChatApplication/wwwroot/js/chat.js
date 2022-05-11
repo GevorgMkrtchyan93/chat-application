@@ -62,7 +62,6 @@ function addMessageToChat(message) {
         </div>
     </div>`
 
-
     //let sender = document.createElement('p');
     //sender.className = "sender";
     //sender.innerHTML = message.userName;

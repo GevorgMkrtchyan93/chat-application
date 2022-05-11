@@ -40,6 +40,11 @@ namespace ChatApplication
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
 
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "localhost:4455";
+            });
+
             services.AddSignalR();
 
             services.AddDistributedRedisCache(option =>

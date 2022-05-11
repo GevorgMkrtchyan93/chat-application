@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
 
 namespace ChatApplication.Models
 {
@@ -13,11 +13,12 @@ namespace ChatApplication.Models
         public DateTime When { get; set; }
 
         public string UserId { get; set; }
+
         public virtual AppUser Sender { get; set; }
 
         public Message()
         {
-            When = DateTime.Now;
+            When = DateTime.UtcNow;
         }
     }
 }

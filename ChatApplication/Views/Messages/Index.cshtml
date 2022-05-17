@@ -16,7 +16,7 @@
         <div class=" col-md-12" id="chat">
             @if (Model != null)
             {
-                @foreach (var message in Model.OrderBy(m => m.When))
+            @foreach (var message in Model.OrderBy(m => m.When))
                 {
 
                     string containerClass, timePosition, textAligin, offset;
@@ -34,15 +34,15 @@
                         textAligin = "text-left";
                         offset = "";
                     }
-                    <div class="row">
-                        <div class="@offset">
-                            <div class="@containerClass">
-                                <p class="sender @textAligin">@message.UserName</p>
-                                <p class="@textAligin">@message.Text</p>
-                                <p class="@timePosition">@message.When.ToString()</p>
-                            </div>
-                        </div>
+            <div class="row">
+                <div class="@offset">
+                    <div class="@containerClass">
+                        <p class="sender @textAligin">@message.UserName</p>
+                        <p class="@textAligin">@message.Text</p>
+                        <p class="@timePosition">@message.When.ToString()</p>
                     </div>
+                </div>
+            </div>
                 }
             }
         </div>
@@ -65,9 +65,9 @@
 </div>
 @if (User.Identity.IsAuthenticated)
 {
-    <script>
+<script>
         const userName = "@ViewBag.CurrentUserName";
-    </script>
+</script>
 }
 
 @section scripts{

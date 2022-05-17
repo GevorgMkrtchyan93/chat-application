@@ -5,6 +5,7 @@ using ChatApplication.Hubs;
 using ChatApplication.Models;
 using ChatApplication.Services;
 using ChatApplication.Services.Interfaces;
+using ChatApplication.ViewModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ChatApplication
@@ -48,9 +50,9 @@ namespace ChatApplication
             });
 
             services.AddSingleton<ICacheExtensionsService, CacheExtensionsService>();
+            services.AddTransient<IMessageService, MessageService>();
 
             Task.Run(async () => await AddDbDateCache(services));
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -97,16 +99,21 @@ namespace ChatApplication
 
         public async Task AddDbDateCache(IServiceCollection services)
         {
-            var cacheKey = "Allmessages0";
-
             var _context = services.BuildServiceProvider()
                       .GetService<ApplicationDbContext>();
 
             var _cacheExtensionsService = services.BuildServiceProvider()
                      .GetService<ICacheExtensionsService>();
 
-            var messageList = await _context.Messages.ToListAsync();
-            await _cacheExtensionsService.SetInitialCacheValueAsync(cacheKey, messageList);
+            var redisMessages = await _context.Messages.Select(m =>
+            new RedisCacheDataModel
+            {
+                Text = m.Text,
+                UserName = m.Sender.UserName,
+                When = m.When
+            }).ToListAsync();
+
+            await _cacheExtensionsService.SetInitialCacheValueAsync(redisMessages);
         }
     }
 }

@@ -22,48 +22,36 @@ namespace ChatApplication.Controllers
     [Authorize]
     public class MessagesController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<AppUser> _userManager;
-        private readonly ICacheExtensionsService _cacheExtensionsService;
+        private readonly IMessageService _messageService;
 
-        string cacheKey = "Allmessages0";
-
-        public MessagesController(ApplicationDbContext context, UserManager<AppUser> userManager, ICacheExtensionsService cacheExtensionsService)
+        public MessagesController(IMessageService messageService)
         {
-            _context = context;
-            _userManager = userManager;
-            _cacheExtensionsService = cacheExtensionsService;
+            _messageService = messageService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            var messages = await _cacheExtensionsService.GetCacheValueAsync(cacheKey);
-            var messageList = messages.ToList();
+            var messageList = await _messageService.GetCacheData();
+
             return View(messageList);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Message message)
+        public async Task<IActionResult> Create(string text)
         {
-            
             if (ModelState.IsValid)
             {
-                if (message.Text == null)
+                if (string.IsNullOrEmpty(text))
                 {
                     return NoContent();
                 }
-                message.UserName = User.Identity.Name;
-                var sender = await _userManager.GetUserAsync(User);
-                message.UserId = sender.Id;
 
-                await _context.Messages.AddAsync(message);
-                await _context.SaveChangesAsync();
-               
-                await _cacheExtensionsService.SetCacheValueAsync<Message>(cacheKey, message);
+                await _messageService.AddDbData(User, text);
 
                 return Ok();
             }
+
             return Error();
         }
 

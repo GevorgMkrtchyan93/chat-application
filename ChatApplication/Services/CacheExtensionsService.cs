@@ -2,6 +2,7 @@
 using ChatApplication.Data;
 using ChatApplication.Models;
 using ChatApplication.Services.Interfaces;
+using ChatApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -9,55 +10,61 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ChatApplication.Services
 {
     public class CacheExtensionsService : ICacheExtensionsService
     {
-        IDistributedCache _distributedCache;
+        public string cacheKey = "Allmessages";
+        private readonly IDistributedCache _distributedCache;
 
         public CacheExtensionsService(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;
         }
 
-        public async Task<IEnumerable<Message>> GetCacheValueAsync( string key)
+        public async Task<IEnumerable<RedisCacheDataModel>> GetCacheValueAsync()
         {
-            var result = await _distributedCache.GetStringAsync(key);
+            var result = await _distributedCache.GetStringAsync(cacheKey);
 
             if (String.IsNullOrEmpty(result))
             {
-                return null;
+                return new List<RedisCacheDataModel>();
             }
 
-            var messageCache = JsonConvert.DeserializeObject<List<Message>>(result);
+            var messageCache = JsonConvert.DeserializeObject<List<RedisCacheDataModel>>(result);
+
             return messageCache;
         }
 
-        public async Task SetCacheValueAsync<Message>( string key, Message message)
+        public async Task SetCacheValueAsync(Message message)
         {
             DistributedCacheEntryOptions cacheEntryOptions = new DistributedCacheEntryOptions();
-
             cacheEntryOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(120);
+            var result = await _distributedCache.GetStringAsync(cacheKey);
 
-            var messageCache = new List<Message>();
-            
-                var result = await _distributedCache.GetStringAsync(key);
+            if (String.IsNullOrEmpty(result))
+            {
+                return;
+            }
 
-                if (result != null)
+            var messageList = JsonConvert.DeserializeObject<List<RedisCacheDataModel>>(result);
+            messageList.Add(
+                new RedisCacheDataModel
                 {
-                    messageCache = JsonConvert.DeserializeObject<List<Message>>(result);
-                }
+                    Text = message.Text,
+                    UserName = message.Sender.UserName,
+                    When = message.When
+                });
 
-            messageCache.Add(message);
-
-            await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(messageCache));
+            await _distributedCache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(messageList));
         }
 
-        public async Task SetInitialCacheValueAsync<Message>(string key, List<Message> messages)
+        public async Task SetInitialCacheValueAsync(List<RedisCacheDataModel> messages)
         {
-            await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(messages));
+            await _distributedCache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(messages));
         }
     }
 }

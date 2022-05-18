@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace ChatApplication.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class MessagesController : Controller
     {
         private readonly IMessageService _messageService;

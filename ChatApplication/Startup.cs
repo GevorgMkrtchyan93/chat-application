@@ -8,6 +8,7 @@ using ChatApplication.Services.Interfaces;
 using ChatApplication.ViewModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
@@ -57,7 +58,7 @@ namespace ChatApplication
             services.AddSingleton<ICacheExtensionsService, CacheExtensionsService>();
             services.AddTransient<IMessageService, MessageService>();
 
-            Task.Run(async () => await AddDbDateCache(services));
+            AddDbDateCache(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

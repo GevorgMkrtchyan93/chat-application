@@ -18,13 +18,11 @@ namespace ChatApplication.Services
     {
         private readonly ICacheExtensionsService _cacheExtensionsService;
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<AppUser> _userManager;
 
-        public MessageService(ApplicationDbContext context, ICacheExtensionsService cacheExtensionsService, UserManager<AppUser> userManager)
+        public MessageService(ApplicationDbContext context, ICacheExtensionsService cacheExtensionsService)
         {
             _context = context;
             _cacheExtensionsService = cacheExtensionsService;
-            _userManager = userManager;
         }
 
         public async Task<IEnumerable<RedisCacheDataModel>> GetCacheData()
@@ -35,19 +33,20 @@ namespace ChatApplication.Services
             return messageList;
         }
 
-        public async Task AddDbData(ClaimsPrincipal user, string text)
+        public async Task AddDbData(AppUser user, string text)
         {
-            var sender = await _userManager.GetUserAsync(user);
-
             var dbMessage = new Message();
             dbMessage.Text = text;
-            dbMessage.UserId = sender.Id;
+            dbMessage.UserId = user.Id;
+
             await _context.Messages.AddAsync(dbMessage);
             await _context.SaveChangesAsync();
 
             var message = new RedisCacheDataModel();
             message.Text = text;
-            message.UserName = sender.UserName;
+            message.UserName = user.UserName;
+            message.When = dbMessage.When;
+
             await _cacheExtensionsService.SetCacheValueAsync(dbMessage);
         }
     }

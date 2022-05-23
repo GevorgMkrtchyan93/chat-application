@@ -14,7 +14,7 @@ namespace ChatApplication.Models
 
         public Message()
         {
-            When = DateTime.Now;
+            When = DateTime.UtcNow.AddHours(4);
         }
     }
 }

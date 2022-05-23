@@ -40,17 +40,17 @@ function addMessageToChat(message) {
     container.className = isCurrentUserMessage ? "container darker time-left" : "container time-right";
 
     let timePosition, textAligne, offset;
-    if (!isCurrentUserMessage) {
-        containerClass = "container";
-        timePosition = "time-left";
-        textAligne = "text-left";
-        offset = "";
-    }
-    else {
+    if (isCurrentUserMessage) {
         containerClass = "connection darker";
         timePosition = "time-right text-right";
         textAligne = "text-right";
         offset = "col-md-6 offset-md-6";
+    }
+    else {
+        containerClass = "container";
+        timePosition = "time-left";
+        textAligne = "text-left";
+        offset = "";
     }
 
     const messageHTML = `<div class="row">

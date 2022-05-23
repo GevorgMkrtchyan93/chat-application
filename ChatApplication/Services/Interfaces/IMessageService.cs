@@ -11,6 +11,6 @@ namespace ChatApplication.Services.Interfaces
     public interface IMessageService
     {
         Task<IEnumerable<RedisCacheDataModel>> GetCacheData();
-        Task AddDbData(ClaimsPrincipal user, string text);
+        Task AddDbData(AppUser user, string text);
     }
 }

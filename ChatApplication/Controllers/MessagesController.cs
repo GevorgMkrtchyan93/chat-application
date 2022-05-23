@@ -19,14 +19,16 @@ using System.Threading.Tasks;
 
 namespace ChatApplication.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class MessagesController : Controller
     {
         private readonly IMessageService _messageService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public MessagesController(IMessageService messageService)
+        public MessagesController(IMessageService messageService, UserManager<AppUser> userManager)
         {
             _messageService = messageService;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -47,7 +49,9 @@ namespace ChatApplication.Controllers
                     return NoContent();
                 }
 
-                await _messageService.AddDbData(User, text);
+                var user = await _userManager.GetUserAsync(User);
+
+                await _messageService.AddDbData(user, text);
 
                 return Ok();
             }

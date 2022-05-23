@@ -10,10 +10,5 @@ namespace ChatApplication.ViewModels
         public string UserName { get; set; }
         public string Text { get; set; }
         public DateTime When { get; set; }
-
-        public RedisCacheDataModel()
-        {
-            When = DateTime.Now;
-        }
     }
 }

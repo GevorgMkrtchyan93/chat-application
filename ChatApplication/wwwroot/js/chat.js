@@ -1,4 +1,4 @@
-﻿class Message {
+﻿class RedisCacheDataModel {
     constructor(username, text, when) {
         this.userName = username;
         this.text = text;
@@ -7,11 +7,10 @@
 }
 
 let usersOnline = 0;
-const username = userName;
+const username = document.getElementById('current-user').value;
 const textInput = document.getElementById('messageText');
 const chat = document.getElementById('chat');
 const messagesQueue = [];
-
 
 document.getElementById('submitButton').addEventListener('click', () => {
     let when = document.createElement('span');
@@ -31,7 +30,7 @@ function clearInputField() {
 function sendMessage() {
     let text = messagesQueue.shift() || "";
     if (text.trim() === "") return;
-    let message = new Message(username, text);
+    let message = new RedisCacheDataModel(username, text);
     sendMessageToHub(message);
 }
 
@@ -40,7 +39,7 @@ function addMessageToChat(message) {
     let container = document.createElement('div');
     container.className = isCurrentUserMessage ? "container darker time-left" : "container time-right";
 
-    let containerClass, timePosition, textAligne, offset;
+    let timePosition, textAligne, offset;
     if (isCurrentUserMessage) {
         containerClass = "connection darker";
         timePosition = "time-right text-right";
@@ -62,24 +61,6 @@ function addMessageToChat(message) {
         </div>
     </div>`
 
-    //let sender = document.createElement('p');
-    //sender.className = "sender";
-    //sender.innerHTML = message.userName;
-    //let text = document.createElement('p');
-    //text.innerHTML = message.text;
-
-    //let when = document.createElement('span');
-    //when.className = isCurrentUserMessage ? "right" : "left";
-    //var currentdate = new Date();
-    //when.innerHTML =
-    //    (currentdate.getMonth() + 1) + "/"
-    //    + currentdate.getDate() + "/"
-    //    + currentdate.getFullYear() + ""
-    //    + currentdate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric' });
-
-    //container.appendChild(sender);
-    //container.appendChild(text);
-    //container.appendChild(when);
     chat.appendChild(htmlToElement(messageHTML));
 }
 

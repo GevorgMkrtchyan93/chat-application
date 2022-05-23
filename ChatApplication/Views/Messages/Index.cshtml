@@ -1,24 +1,23 @@
-﻿@model IEnumerable<ChatApplication.Models.Message>
+﻿@model IEnumerable<ChatApplication.ViewModels.RedisCacheDataModel>
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Message Page";
     var userName = User.Identity.Name;
 }
 
 <div>
     <p id="onlineUsersCounter"></p>
 </div>
-
 <div class="jumbotron bg-light">
     <h2 class="text-center text-primary">
         <i class="alert-dismissible"></i>&nbsp; Public Talk
     </h2>
+    <input id="current-user" type="hidden" value="@userName" />
     <div class="row">
         <div class=" col-md-12" id="chat">
             @if (Model != null)
             {
                 @foreach (var message in Model.OrderBy(m => m.When))
                 {
-
                     string containerClass, timePosition, textAligin, offset;
                     if (userName == message.UserName)
                     {
@@ -34,7 +33,6 @@
                         textAligin = "text-left";
                         offset = "";
                     }
-
                     <div class="row">
                         <div class="@offset">
                             <div class="@containerClass">
@@ -44,7 +42,6 @@
                             </div>
                         </div>
                     </div>
-
                 }
             }
         </div>
@@ -73,7 +70,6 @@
 }
 
 @section scripts{
-
     <script src="~/js/signalr/dist/browser/signalr.js"></script>
     <script src="~/lib/jquery/dist/jquery.unobtrusive-ajax.min.js"></script>
     <script src="~/js/chat.js"></script>

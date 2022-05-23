@@ -1,13 +1,23 @@
 using Abp.AspNetCore.SignalR.Hubs;
+using Abp.Runtime.Caching;
 using ChatApplication.Data;
 using ChatApplication.Hubs;
 using ChatApplication.Models;
+using ChatApplication.Services;
+using ChatApplication.Services.Interfaces;
+using ChatApplication.ViewModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ChatApplication
 {
@@ -39,6 +49,11 @@ namespace ChatApplication
             });
 
             services.AddSignalR();
+
+            services.AddSingleton<ICacheExtensionsService, CacheExtensionsService>();
+            services.AddTransient<IMessageService, MessageService>();
+
+            AddDbDateCache(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,14 +70,6 @@ namespace ChatApplication
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
-            app.UseCors(builder =>
-            {
-                builder.WithOrigins("https://localhost:4000")
-                    .AllowAnyHeader()
-                    .WithMethods("GET", "POST")
-                    .AllowCredentials();
-            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -82,5 +89,25 @@ namespace ChatApplication
                 endpoints.MapRazorPages();
             });
         }
+
+        public async Task AddDbDateCache(IServiceCollection services)
+        {
+            var _context = services.BuildServiceProvider()
+                      .GetService<ApplicationDbContext>();
+
+            var _cacheExtensionsService = services.BuildServiceProvider()
+                     .GetService<ICacheExtensionsService>();
+
+            var redisMessages = await _context.Messages.Select(m =>
+            new RedisCacheDataModel
+            {
+                Text = m.Text,
+                UserName = m.Sender.UserName,
+                When = m.When
+            }).ToListAsync();
+
+            await _cacheExtensionsService.SetInitialCacheValueAsync(redisMessages);
+        }
     }
 }
+

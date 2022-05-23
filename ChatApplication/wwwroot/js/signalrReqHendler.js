@@ -26,9 +26,9 @@ function fetchOnlineUsersCount() {
 }
 
 function fetchDisconnectionOnlineUsersCount() {
-    alert("getDisconnectionUsersCount")
     connection.invoke('getDisconnectionUsersCount')
 }
+
 setTimeout(() => {
     fetchOnlineUsersCount();
     sendNewConnectionToHub();

@@ -1,7 +1,9 @@
 ﻿using ChatApplication.Models;
+using ChatApplication.ViewModels;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ChatApplication.Hubs
@@ -10,11 +12,13 @@ namespace ChatApplication.Hubs
     {
         public static HashSet<string> ConnectedIds = new HashSet<string>();
     }
+
     public class ChatHub : Hub
     {
         public override Task OnConnectedAsync()
         {
             UserHandler.ConnectedIds.Add(Context.ConnectionId);
+
             return base.OnConnectedAsync();
         }
 
@@ -25,7 +29,7 @@ namespace ChatApplication.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async Task SendMessage(Message message)
+        public async Task SendMessage(RedisCacheDataModel message)
         {
             await Clients.All.SendAsync("ReceiveMessage", message);
         }
